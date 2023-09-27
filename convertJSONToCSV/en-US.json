@@ -1,0 +1,10 @@
+{
+  "admin": {
+    "mapping": {
+      "assigned": "assigned",
+      "noAssignment": "none",
+      "sold": "sold",
+      "test2": "test2"
+    }
+  }
+}
