@@ -24,12 +24,7 @@ describe('createJSONs', () => {
         } else if (event === 'end') {
           callback();
         }
-      }),
-      once: jest.fn((event, callback) => {
-        if (event === 'error') {
-          callback(new Error('File not found'));
-        }
-      }),
+      })
     });
 
     jest.spyOn(fs, 'writeFileSync').mockReturnValueOnce(undefined);
@@ -41,5 +36,22 @@ describe('createJSONs', () => {
       'value1': 'value2'
     }, null, 2));
   });
-});
 
+  it('should reject with an error when CSV file does not exist', async () => {
+    process.argv = ['node', 'convertCSVToJSON.js', 'nonexistent.csv'];
+
+    const { createJSONs } = require('./convertCSVToJSON');
+    const inputFileName = 'nonexistent.csv';
+
+    jest.spyOn(fs, 'createReadStream').mockReturnValueOnce({
+      pipe: jest.fn().mockReturnThis(),
+      on: jest.fn((event, callback) => {
+        if (event === 'error') {
+          callback(new Error('File not found'));
+        }
+      }),
+    });
+
+    await expect(createJSONs(inputFileName)).rejects.toThrow('File not found');
+  });
+});
