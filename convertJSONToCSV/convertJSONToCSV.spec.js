@@ -25,7 +25,7 @@ describe('flattenObject', () => {
       "admin.mapping.noAssignment": "none",
       "admin.mapping.sold": "verkauft",
       "admin.mapping.test1": "test1"
-  });
+    });
   });
 });
 
@@ -51,29 +51,29 @@ describe('mergeData', () => {
 
     expect(merged).toEqual({
       "admin.mapping.assigned": {
-          "key": "admin.mapping.assigned",
-          "en-US": "zugewiesen",
-          "de-DE": "assigned"
+        "key": "admin.mapping.assigned",
+        "en-US": "zugewiesen",
+        "de-DE": "assigned"
       },
       "admin.mapping.noAssignment": {
-          "key": "admin.mapping.noAssignment",
-          "en-US": "none",
-          "de-DE": "none"
+        "key": "admin.mapping.noAssignment",
+        "en-US": "none",
+        "de-DE": "none"
       },
       "admin.mapping.sold": {
-          "key": "admin.mapping.sold",
-          "en-US": "verkauft",
-          "de-DE": "sold"
+        "key": "admin.mapping.sold",
+        "en-US": "verkauft",
+        "de-DE": "sold"
       },
       "admin.mapping.test1": {
-          "key": "admin.mapping.test1",
-          "en-US": "test1"
+        "key": "admin.mapping.test1",
+        "en-US": "test1"
       },
       "admin.mapping.test2": {
-          "key": "admin.mapping.test2",
-          "de-DE": "test2"
+        "key": "admin.mapping.test2",
+        "de-DE": "test2"
       }
-  });
+    });
   });
 });
 
@@ -87,7 +87,7 @@ describe('getJsonFiles', () => {
   });
 
   it('should return JSON file names from command line arguments', () => {
-    process.argv = ['node', 'your-script.js', 'en-US.json', 'de-DE.json'];
+    process.argv = ['node', 'convertJSONToCSV.js', 'en-US.json', 'de-DE.json'];
 
     const jsonFiles = getJsonFiles('./');
 
