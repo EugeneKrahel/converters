@@ -1,7 +1,6 @@
 {
   "scripts": {
-    "test": "jest",
-    "coverage": "nyc --reporter=text-summary --reporter=html jest"
+    "test": "jest"
   },
   "devDependencies": {
     "csv-parser": "^3.0.0",
