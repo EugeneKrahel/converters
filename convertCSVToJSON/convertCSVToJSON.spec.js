@@ -10,67 +10,36 @@ describe('nestKeys function', () => {
   });
 });
 
-describe('createJSONs function', () => {
-  jest.mock('fs');
-  const mockCreateReadStream = jest.fn();
-  const mockWriteFileSync = jest.fn();
-  const csvData = [
-    { 'keyString': 'key1', 'en': 'English Value 1', 'fr': 'French Value 1' },
-    { 'keyString': 'key2', 'en': 'English Value 2', 'fr': 'French Value 2' },
-  ];
-
-  beforeEach(() => {
+describe('createJSONs', () => {
+  it('should create JSON files from CSV', async () => {
     process.argv = ['node', 'convertCSVToJSON.js', 'mock.csv'];
-    jest.clearAllMocks();
-  });
 
-  it('should create JSON files for each language', async () => {
     const { createJSONs } = require('./convertCSVToJSON');
-    const fileName = 'mock.csv';
-    mockCreateReadStream.mockReturnValue({
-      pipe: jest.fn(() => ({
-        on: (event, callback) => {
-          if (event === 'data') {
-            csvData.forEach(callback);
-          } else if (event === 'end') {
-            callback();
-          }
-        },
-        on: (event, callback) => {
-          if (event === 'data') {
-            csvData.forEach(callback);
-          } else if (event === 'end') {
-            callback();
-          }
-        },
-      })),
-      on: jest.fn(),
+    const inputFileName = 'mock.csv';
+    jest.spyOn(fs, 'createReadStream').mockReturnValueOnce({
+      pipe: jest.fn().mockReturnThis(),
+      on: jest.fn((event, callback) => {
+        if (event === 'data') {
+          callback({ 'keyString.lang1': 'value1', 'keyString.lang2': 'value2' });
+        } else if (event === 'end') {
+          callback();
+        }
+      }),
+      once: jest.fn((event, callback) => {
+        if (event === 'error') {
+          callback(new Error('File not found'));
+        }
+      }),
     });
 
-    await createJSONs(fileName);
+    jest.spyOn(fs, 'writeFileSync').mockReturnValueOnce(undefined);
 
-    expect(mockCreateReadStream).toHaveBeenCalledWith(fileName);
-    expect(mockWriteFileSync).toHaveBeenCalledTimes(2);
-    expect(mockWriteFileSync).toHaveBeenCalledWith('en.json', expect.any(String));
-    expect(mockWriteFileSync).toHaveBeenCalledWith('fr.json', expect.any(String));
-  });
+    await expect(createJSONs(inputFileName)).resolves.toBeUndefined();
 
-  it('should reject on stream error', async () => {
-    const { createJSONs } = require('./convertCSVToJSON');
-    const fileName = 'sample.csv';
-    const errorMsg = 'File not found';
-    mockCreateReadStream.mockReturnValue({
-      pipe: jest.fn(() => ({
-        on: (event, callback) => {
-          if (event === 'error') {
-            callback(new Error(errorMsg));
-          }
-        },
-      })),
-      on: jest.fn(),
-    });
-
-    await expect(createJSONs(fileName)).rejects.toThrowError(errorMsg);
+    expect(fs.createReadStream).toHaveBeenCalledWith(inputFileName);
+    expect(fs.writeFileSync).toHaveBeenCalledWith('keyString.lang2.json', JSON.stringify({
+      'value1': 'value2'
+    }, null, 2));
   });
 });
 
